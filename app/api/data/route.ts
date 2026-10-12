@@ -1,0 +1,2 @@
+import {getContent,isAdmin,json} from '../../../lib/server';
+export async function GET(){try{const {content,revision}=await getContent();const admin=await isAdmin();return json({content:{...content,news:content.news.filter(x=>admin||x.published),people:content.people.filter(x=>admin||x.published)},revision,isAdmin:admin});}catch{return json({error:'Le contenu est momentanément indisponible. Réessayez dans quelques instants.'},503);}}
