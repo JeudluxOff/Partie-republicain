@@ -1,0 +1,10 @@
+SAN ANDREAS REPUBLICAN PARTY — VERIFICATION
+
+1. app/site.tsx : rechercher « SAN ANDREAS REPUBLICAN PARTY · LOS SANTOS » (bloc d’accueil).
+2. app/site.tsx : rechercher « Ajouter un programme » (administration).
+3. app/site.tsx : rechercher « Supprimer ce programme » (administration).
+4. app/site.tsx : rechercher « Logo du parti » (administration).
+5. public/images/logo-republican.png : nouveau logo éléphant rouge.
+6. app/not-found.tsx : nom du parti corrigé.
+
+Si l’ancien texte apparaît sur le site, contrôler le dernier commit GitHub puis le déploiement Vercel qui lui correspond. Importer un ZIP ne déclenche pas à lui seul un déploiement : il faut pousser les changements sur la branche reliée à Vercel.

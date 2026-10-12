@@ -16,7 +16,7 @@ try {
   for (const path of ['/', '/suivi', '/accueil', '/programme', '/equipe', '/actualites', '/adherer', '/admin', '/connexion', '/mentions', '/equipe/profil-test', '/actualites/annonce-test']) {
     const res = await fetch('http://127.0.0.1:3187'+path);
     assert.equal(res.status, 200, path);
-    assert.match(await res.text(), /Union Civique|UNION CIVIQUE/, path);
+    assert.match(await res.text(), /San Andreas Republican Party|SAN ANDREAS REPUBLICAN PARTY/, path);
     console.log('OK 200 '+path);
   }
   const data = await fetch('http://127.0.0.1:3187/api/data');
