@@ -10,3 +10,5 @@ body{background:#fff;font-size:15px;color:#233651}h1,h2,h3{font-weight:800;lette
 
 /* Logo officiel configurable */
 .logo-image{width:57px;height:57px;object-fit:contain;flex-shrink:0;display:block}.seal-logo-image{width:65px;height:65px;object-fit:contain;display:block}.admin-sidebar .logo-image{width:40px;height:40px}@media(max-width:600px){.logo-image{width:42px;height:42px}.admin-sidebar .logo-image{width:39px;height:39px}}
+
+.footer-emblem{width:88px;height:88px;object-fit:contain;opacity:.38}.footer-monogram{display:flex;align-items:center;justify-content:center}
