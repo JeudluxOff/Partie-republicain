@@ -13,7 +13,7 @@ try {
     child.once('error', reject);
     child.once('exit', code => reject(new Error('Arrêt prématuré : '+code)));
   });
-  for (const path of ['/', '/accueil', '/programme', '/equipe', '/actualites', '/adherer', '/admin', '/connexion', '/mentions', '/equipe/profil-test', '/actualites/annonce-test']) {
+  for (const path of ['/', '/suivi', '/accueil', '/programme', '/equipe', '/actualites', '/adherer', '/admin', '/connexion', '/mentions', '/equipe/profil-test', '/actualites/annonce-test']) {
     const res = await fetch('http://127.0.0.1:3187'+path);
     assert.equal(res.status, 200, path);
     assert.match(await res.text(), /Union Civique|UNION CIVIQUE/, path);

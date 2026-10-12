@@ -31,3 +31,7 @@ npm run dev
 ```
 
 Voir `.env.example` pour les variables. Ne jamais publier `.env.local`. En cas de mise à jour de l’ancien dépôt, retirer `app/[[...slug]]` : il a été remplacé par les routes explicites.
+
+## Suivi des adhésions
+
+Version 2.1 : page `/suivi`, lien privé après envoi et actualisation du statut toutes les 15 secondes. Voir `MISE-A-JOUR-SUIVI.md`. Aucune migration SQL nécessaire.
