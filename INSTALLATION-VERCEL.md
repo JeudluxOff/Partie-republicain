@@ -1,4 +1,4 @@
-# Union Civique — installation sur Vercel
+# San Andreas Republican Party — installation sur Vercel
 
 Le dossier contient le site complet, ses images originales, son administration et son formulaire d’adhésion. La refonte visuelle reprend les formes du précédent portail San Andreas Government : bannière photo, cadres décalés, blocs arrondis, pictogrammes circulaires, bleu institutionnel et rouge.
 

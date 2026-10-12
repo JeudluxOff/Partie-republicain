@@ -1,4 +1,4 @@
-# Union Civique de Los Santos — Vercel
+# San Andreas Republican Party de Los Santos — Vercel
 
 Site complet GTA RP : pages publiques, programme, annonces, équipe et cabinets, adhésions, administration des contenus et images.
 
