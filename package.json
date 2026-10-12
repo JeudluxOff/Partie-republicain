@@ -1,16 +1,18 @@
 {
   "name": "union-civique-los-santos",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "engines": {
-    "node": ">=22"
+    "node": "22.x"
   },
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "db:setup": "node --env-file-if-exists=.env.local scripts/setup-db.mjs"
+    "db:setup": "node --env-file-if-exists=.env.local scripts/setup-db.mjs",
+    "prebuild": "node scripts/verify-source.mjs",
+    "test:routes": "node scripts/test-routes.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.2.0",

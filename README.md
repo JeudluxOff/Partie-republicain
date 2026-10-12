@@ -1,28 +1,33 @@
-# Union Civique de Los Santos
+# Union Civique de Los Santos — Vercel
 
-Site de parti politique fictif GTA RP, avec administration et adhésions.
+Site complet GTA RP : pages publiques, programme, annonces, équipe et cabinets, adhésions, administration des contenus et images.
 
-**Commencer par [INSTALLATION-VERCEL.md](./INSTALLATION-VERCEL.md).**
+## Déploiement
 
-## Stack
+1. Extraire cette archive et mettre son contenu à la racine du dépôt GitHub. `package.json`, `vercel.json` et `app/` doivent apparaître directement.
+2. Importer le dépôt dans Vercel ; Root Directory `./`, Node.js 22.x. Le framework et les commandes sont configurés par `vercel.json`.
+3. Pour l’administration et les adhésions, connecter Neon, exécuter `database/schema.sql` et ajouter `DATABASE_URL`, `ADMIN_PASSWORD`, `SESSION_SECRET`.
+4. Pour importer des images, connecter Vercel Blob Public avec `BLOB_READ_WRITE_TOKEN`.
+5. Redéployer puis ouvrir `/connexion`.
 
-Next.js App Router, React, TypeScript, PostgreSQL Neon, Vercel Blob.
+Le site public fonctionne sans base configurée. Les fonctions d’écriture nécessitent les services ci-dessus. Toutes les étapes sont détaillées dans `INSTALLATION-VERCEL.md`.
 
-## Structure
+## Architecture
 
-- `app/site.tsx` : pages publiques et interface d’administration.
-- `app/globals.css` : styles communs et interface d’administration.
-- `app/civic.css` : refonte institutionnelle inspirée du site San Andreas Government.
-- `app/api/` : contenus, adhésions, fichiers, connexion et déconnexion.
-- `lib/content.ts` : contenu initial et types.
-- `lib/server.ts` : accès PostgreSQL, réponses et contrôles communs.
-- `lib/auth.ts` : sessions administrateur signées, vérifiées côté serveur.
-- `public/images/` : visuels originaux inclus.
-- `database/schema.sql` : création des tables et index.
-- `scripts/setup-db.mjs` : application du schéma SQL.
+- Next.js App Router : accueil `app/page.tsx`, une route explicite par rubrique.
+- Fiches individuelles : `app/equipe/[id]/page.tsx` et `app/actualites/[id]/page.tsx`.
+- Interface et design conservés dans `app/site.tsx`, `app/globals.css` et `app/civic.css`.
+- Fonctions serveur Next.js dans `app/api/`, PostgreSQL Neon et images Vercel Blob.
+- Authentification administrateur côté serveur, cookie signé HttpOnly, contrôle d’origine, limites de connexion stockées dans PostgreSQL.
+- Aucun service ChatGPT Sites ou Cloudflare requis.
 
-Les contenus sont rendus comme du texte React, sans injection HTML. Les écritures d’administration nécessitent une session valide et la bonne origine. L’enregistrement des contenus utilise une révision pour empêcher l’écrasement d’une modification concurrente.
+## Commandes
 
-Les imports acceptent seulement PNG, JPEG et WebP, avec vérification de signature du fichier et limite de 4 Mo. Les médias publics ne servent pas au stockage des dossiers d’adhésion.
+```bash
+npm ci
+npm run build
+npm run test:routes
+npm run dev
+```
 
-Le code source ne contient aucun identifiant ni mot de passe de production. Le projet d’origine et son hébergement restent indépendants de cet export.
+Voir `.env.example` pour les variables. Ne jamais publier `.env.local`. En cas de mise à jour de l’ancien dépôt, retirer `app/[[...slug]]` : il a été remplacé par les routes explicites.

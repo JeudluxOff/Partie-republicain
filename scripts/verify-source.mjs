@@ -1,0 +1,8 @@
+import {existsSync} from 'node:fs';
+const files = ['app/page.tsx', 'app/layout.tsx', 'app/site.tsx', 'app/programme/page.tsx', 'app/equipe/page.tsx', 'app/equipe/[id]/page.tsx', 'app/actualites/page.tsx', 'app/actualites/[id]/page.tsx', 'app/adherer/page.tsx', 'app/admin/page.tsx', 'app/connexion/page.tsx', 'app/mentions/page.tsx', 'app/api/data/route.ts', 'app/api/admin/route.ts', 'app/api/applications/route.ts', 'app/api/login/route.ts', 'app/api/logout/route.ts', 'app/api/upload/route.ts', 'public/images/equipe-union-civique.png', 'vercel.json'];
+const missing = files.filter(file => !existsSync(file));
+if (missing.length) {
+  console.error('PROJET INCOMPLET : fichiers absents du dépôt :\n' + missing.join('\n'));
+  process.exit(1);
+}
+console.log('Sources Vercel complètes : accueil, rubriques, administration, API et image présents.');

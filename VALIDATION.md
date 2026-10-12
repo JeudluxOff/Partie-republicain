@@ -1,8 +1,16 @@
-# Vérifications de l’export
+# Validation — version Vercel 2.0.0
 
-- Compilation Next.js de production réussie (`npm run build`, Next.js 16.4.0).
-- Vérification TypeScript réussie pendant la compilation.
-- 23 contrôles isolés réussis : mot de passe, signature de session, refus des sessions modifiées, révocation après changement du mot de passe, accès anonyme refusé à l’administration, contrôle d’origine, attributs du cookie, limite de tentatives, sauvegarde des contenus, conflits de révision, confidentialité des brouillons, adhésion, doublons, suivi et suppression.
-- Les contrôles utilisent une base isolée et des dépendances simulées. Ils ne constituent pas un test de connexion à ta future base Neon ni à ton stockage Vercel Blob.
-- Aucun déploiement n’a été réalisé sur ton compte Vercel. Effectue les étapes du guide, puis les vérifications après déploiement.
-- Le rendu visuel n’a pas pu être inspecté dans un navigateur dans cet environnement. Les styles comprennent les adaptations pour ordinateur, tablette et mobile.
+Vérifications effectuées le 12 octobre 2026 :
+
+- Compilation Next.js de production et vérification TypeScript réussies.
+- Accueil généré explicitement à la route `/` ; rubriques à routes dédiées.
+- 11 adresses publiques, administrateur et fiches : HTTP 200 sur le serveur de production local.
+- Deux adresses inexistantes : HTTP 404 attendu.
+- API de contenu accessible sans base avec le contenu initial ; session anonyme confirmée.
+- Lecture des dossiers sans connexion : HTTP 403.
+- Image originale : HTTP 200 et type PNG.
+- Configuration Vercel explicite et contrôle des fichiers avant compilation.
+
+Les styles, les images originales, les textes, les formulaires, les API et les mécanismes d’authentification de la version précédente sont conservés. L’ancien routeur global et les fichiers de connecteurs inutilisés ont été retirés.
+
+Ces vérifications portent sur le code livré et le serveur local. Aucun nouveau déploiement Vercel n’a été effectué depuis cet environnement. Les opérations réelles Neon et Blob nécessitent de connecter les services et de renseigner les variables dans le projet Vercel. Les tests de routes ne valident pas ces services réels.

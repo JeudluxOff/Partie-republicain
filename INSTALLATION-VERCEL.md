@@ -6,10 +6,16 @@ Le dossier contient le site complet, ses images originales, son administration e
 
 1. Décompresse `Union-Civique-Vercel.zip` sur ton ordinateur.
 2. Crée un dépôt GitHub privé.
-3. Ajoute **le contenu du dossier `Union-Civique-Vercel`** à la racine du dépôt. Tu dois voir directement `package.json`, `app`, `public` et `lib`.
+3. Ajoute **tous les fichiers extraits du ZIP** à la racine du dépôt (le ZIP contient directement les fichiers du projet). Tu dois voir directement `package.json`, `app`, `public` et `lib`.
 4. N’ajoute jamais de fichier `.env.local` ni de mot de passe sur GitHub.
 
 Le ZIP n’est pas à importer directement comme un site statique. Il faut importer ce projet Next.js dans Vercel.
+
+## Repartir depuis le dépôt précédent
+
+Remplace les anciens fichiers du site par ceux de cette archive. Supprime l’ancien dossier `app/[[...slug]]` s’il est encore présent : les pages ont maintenant chacune leur fichier. Conserve tes variables d’environnement dans Vercel et ta base Neon existante.
+
+Cette archive est plate : `package.json`, `vercel.json` et `app/` doivent se trouver directement à la racine de ton dépôt. Ne téléverse pas simplement le fichier ZIP dans GitHub.
 
 ## 2. Créer le projet Vercel
 
@@ -20,7 +26,9 @@ Dans Vercel, choisis **Add New → Project**, puis importe ton dépôt GitHub.
 - Install Command : `npm ci`.
 - Build Command : `npm run build`.
 - Output Directory : laisse le réglage par défaut de Next.js.
-- Node.js : **22.x ou version supérieure compatible**.
+- Node.js : **22.x**.
+
+Le fichier `vercel.json` configure explicitement le framework Next.js, `npm ci`, `npm run build` et la sortie par défaut du framework. La Root Directory reste à vérifier dans Vercel : choisis `./` si les fichiers sont à la racine.
 
 Un premier déploiement peut afficher les pages publiques sans base configurée. Les modifications et les adhésions nécessitent les étapes suivantes.
 
@@ -99,7 +107,7 @@ Si Vercel demande une connexion à tous les visiteurs, vérifie **Settings → D
 
 ## Sur ton ordinateur
 
-Installe Node.js 22 ou supérieur, puis ouvre un terminal dans le dossier du projet :
+Installe Node.js 22, puis ouvre un terminal dans le dossier du projet :
 
 ```bash
 npm ci
@@ -133,3 +141,12 @@ Ce ZIP contient le code et le contenu initial. Les éventuelles adhésions, nouv
 - Next.js sur Vercel : https://vercel.com/docs/frameworks/full-stack/nextjs
 - Neon Serverless Driver : https://neon.com/docs/serverless/serverless-driver
 - Import d’images Vercel Blob : https://vercel.com/docs/vercel-blob/server-upload
+
+## Vérification locale de la version de production
+
+```bash
+npm run build
+npm run test:routes
+```
+
+Le contrôle de sources intégré à la compilation affiche un message explicite si une page ou une API manque. Les tests de routes lancent temporairement le serveur local sur le port 3187, sans utiliser ta base ni tes secrets, puis vérifient les pages, les erreurs 404, l’image principale et la protection des dossiers.
