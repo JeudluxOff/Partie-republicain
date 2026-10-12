@@ -7,3 +7,11 @@ body{background:#fff;font-size:15px;color:#233651}h1,h2,h3{font-weight:800;lette
 
 /* Suivi privé des adhésions */
 .tracking-page{max-width:920px;padding-top:70px;padding-bottom:80px}.tracking-page h1{font-size:clamp(2.2rem,5vw,4rem);margin:20px 0}.tracking-form,.tracking-card{background:#fff;border:1px solid #dce2eb;border-radius:16px;padding:28px;margin:30px 0;box-shadow:0 12px 32px #1b365d08}.tracking-form{display:grid;gap:14px}.tracking-form label{font-weight:700}.tracking-form input,.tracking-access input{width:100%;min-width:0;border:1px solid #cbd3df;border-radius:7px;padding:14px;font:inherit;background:#f8fafc;color:#1b365d}.tracking-form .button{justify-self:start}.tracking-card h2{margin:18px 0;font-size:2rem}.tracking-steps{display:flex;list-style:none;gap:20px;padding:24px 0;flex-wrap:wrap}.tracking-steps li{display:flex;align-items:center;gap:10px;color:#667085;flex:1;min-width:150px}.tracking-steps span{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#edf0f5;flex-shrink:0}.tracking-steps .done{color:#1b365d;font-weight:700}.tracking-steps .done span{background:#1b365d;color:white}.tracking-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:18px 0}.tracking-access{margin:24px 0;text-align:left}.tracking-access small,.tracking-help{color:#596579;line-height:1.7}.tracking-admin{border-top:1px solid #e0e5ed;margin-top:24px;padding-top:20px}.tracking-card small{flex:1;min-width:180px}.tracking-help{max-width:720px}@media(max-width:600px){.tracking-page{padding-top:40px}.tracking-card,.tracking-form{padding:20px}.tracking-steps{display:grid}.tracking-actions .button{width:100%;justify-content:center}}
+
+/* Logo officiel du San Andreas Republican Party */
+.logo .logo-image{width:57px;height:57px;object-fit:contain;flex-shrink:0;display:block}
+.statement-seal .seal-logo-image{width:65px;height:65px;object-fit:contain;display:block}
+.admin-sidebar .logo .logo-image{width:40px;height:40px}
+@media(max-width:1180px){.logo .logo-image{width:50px;height:50px}}
+@media(max-width:900px){.admin-sidebar .logo .logo-image{width:35px;height:35px}}
+@media(max-width:600px){.logo .logo-image{width:42px;height:42px}.admin-sidebar .logo .logo-image{width:39px;height:39px}}
