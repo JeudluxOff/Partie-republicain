@@ -19,6 +19,21 @@ body{background:#fff;font-size:15px;color:#233651}h1,h2,h3{font-weight:800;lette
 .footer-emblem{object-fit:contain}
 @media(max-width:600px){.logo-image{width:42px;height:42px}}
 
+/* Affiches des annonces : conserver toute l’image et ses proportions. */
+.article-image {
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+}
+.news-image > img {
+  object-fit: contain;
+  object-position: center;
+  background: transparent;
+}
+.news-card:hover .news-image > img {
+  transform: none;
+}
+
 /* Portraits détourés : laisser apparaître le fond de la page. */
 .portrait {
   background: transparent;
