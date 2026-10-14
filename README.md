@@ -1,3 +1,5 @@
+> **Version 3 : consultez d’abord [MISE-A-JOUR-V3.md](MISE-A-JOUR-V3.md) pour les nouveautés et l’installation sur votre site existant.**
+
 # San Andreas Republican Party de Los Santos — Vercel
 
 Site complet GTA RP : pages publiques, programme, annonces, équipe et cabinets, adhésions, administration des contenus et images.

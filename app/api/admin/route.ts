@@ -1,16 +1,29 @@
+import {allowed,session} from '../../../lib/auth';
+import {ensureExtras} from '../../../lib/extra-db';
 import {db,getContent,isAdmin,json,sameOrigin,safeImage} from '../../../lib/server';
 import {Content} from '../../../lib/content';
-export async function GET(){if(!await isAdmin())return json({error:'Accès réservé à l’administrateur.'},403);try{const rows=await db().prepare('SELECT id,name,discord,phone,district,profession,interest,motivation,availability,status,notes,created_at FROM applications ORDER BY created_at DESC LIMIT 2000').all();return json({applications:rows.results});}catch{return json({error:'Impossible de charger les demandes.'},503);}}
+export async function GET(){if(!await allowed('direction','recrutement'))return json({error:'Accès réservé à l’administrateur.'},403);try{const rows=await db().prepare('SELECT id,name,discord,phone,district,profession,interest,motivation,availability,status,notes,created_at FROM applications ORDER BY created_at DESC LIMIT 2000').all();return json({applications:rows.results});}catch{return json({error:'Impossible de charger les demandes.'},503);}}
 export async function POST(req:Request){if(!sameOrigin(req))return json({error:'Origine refusée.'},403);if(!await isAdmin())return json({error:'Accès réservé à l’administrateur.'},403);try{if(Number(req.headers.get('content-length'))>1500000)return json({error:'Contenu trop volumineux.'},413);const b=await req.json() as Record<string, any>;if(b.action==='content'){
-const c=b.content as Content;
+if(!await allowed('direction','communication'))return json({error:'Accès refusé.'},403);
+let c=b.content as Content;
+const actor=await session();const current=await getContent();
+if(actor?.role==='communication')c={...current.content,news:c?.news,events:c?.events,press:c?.press,campaign:c?.campaign};
 if(!c||typeof c.name!=='string'||!c.name.trim()||!Array.isArray(c.news)||!Array.isArray(c.people)||!Array.isArray(c.priorities)||!safeImage(c.heroImage)||!safeImage(c.logoImage??'/images/logo-republican.png'))return json({error:'Contenu invalide.'},400);
 if(c.news.length>200||c.people.length>300||c.priorities.length>30||JSON.stringify(c).length>1000000)return json({error:'Limite de contenu atteinte.'},400);
 if(![c.tagline,c.heroTitle,c.heroText,c.about,c.discordUrl].every(v=>typeof v==='string')||c.discordUrl&&!/^https:\/\/(discord\.gg|discord\.com)\//.test(c.discordUrl))return json({error:'Paramètres ou lien Discord invalides.'},400);
 if(c.news.some(n=>![n.id,n.title,n.category,n.date,n.excerpt,n.body].every(v=>typeof v==='string')||!safeImage(n.image)||typeof n.published!=='boolean')||c.people.some(p=>![p.id,p.name,p.role,p.group,p.parentId,p.bio].every(v=>typeof v==='string')||!safeImage(p.image)||typeof p.published!=='boolean'||!Number.isFinite(p.order))||c.priorities.some(p=>![p.id,p.title,p.short,p.body,p.measures].every(v=>typeof v==='string')))return json({error:'Une fiche contient des données invalides.'},400);
 if(c.people.some(p=>[p.profileRole,p.priorities,p.values].some(v=>v!==undefined&&(typeof v!=='string'||v.length>1200))))return json({error:'Les champs de présentation doivent contenir au maximum 1200 caractères.'},400);
+if(c.news.some(n=>n.publishAt!==undefined&&n.publishAt!==''&&(typeof n.publishAt!=='string'||!Number.isFinite(Date.parse(n.publishAt)))||n.featured!==undefined&&typeof n.featured!=='boolean'))return json({error:'Programmation invalide.'},400);
+if(c.events!==undefined&&(!Array.isArray(c.events)||c.events.length>200||c.events.some(e=>![e.id,e.title,e.date,e.location,e.description].every(v=>typeof v==='string'&&v.length<=8000)||!e.title.trim()||!Number.isFinite(Date.parse(e.date))||typeof e.published!=='boolean'||typeof e.registration!=='boolean')))return json({error:'Événement invalide.'},400);
+if(c.press!==undefined&&(!Array.isArray(c.press)||c.press.length>100||c.press.some(p=>typeof p.id!=='string'||typeof p.title!=='string'||!safeImage(p.url)||!p.url)))return json({error:'Ressource presse invalide.'},400);
+if(c.campaign!==undefined&&(!c.campaign||typeof c.campaign.enabled!=='boolean'||![c.campaign.title,c.campaign.text].every(v=>typeof v==='string'&&v.length<=10000)||!safeImage(c.campaign.image)||!Array.isArray(c.campaign.candidateIds)||c.campaign.candidateIds.length>50||c.campaign.candidateIds.some(id=>typeof id!=='string')))return json({error:'Campagne invalide.'},400);
+await ensureExtras();
+// Store the previous revision before the optimistic update; duplicate snapshots are ignored.
+await db().prepare('INSERT INTO content_history(revision,payload,author,created_at) SELECT revision,payload,?,? FROM content WHERE id=? AND revision=? ON CONFLICT(revision) DO NOTHING').bind(actor?.username||'admin',new Date().toISOString(),'main',b.revision).run();
 let result;if(b.revision===0){result=await db().prepare('INSERT INTO content(id,payload,revision) VALUES(?,?,1) ON CONFLICT(id) DO NOTHING').bind('main',JSON.stringify(c)).run();}else{result=await db().prepare('UPDATE content SET payload=?,revision=revision+1 WHERE id=? AND revision=?').bind(JSON.stringify(c),'main',b.revision).run();}if(!result.meta.changes)return json({error:'Le site a été modifié dans une autre fenêtre. Rechargez avant de recommencer.'},409);return json({ok:true,revision:b.revision+1});
 }if(b.action==='application'){
+if(!await allowed('direction','recrutement'))return json({error:'Accès refusé.'},403);
 if(!['nouvelle','en cours','acceptée','refusée','archivée'].includes(b.status)||typeof b.notes!=='string'||b.notes.length>10000)return json({error:'Statut ou notes invalides.'},400);
 await db().prepare('UPDATE applications SET status=?,notes=? WHERE id=?').bind(b.status,b.notes,b.id).run();return json({ok:true});}
-if(b.action==='delete-application'){await db().prepare('DELETE FROM applications WHERE id=?').bind(b.id).run();return json({ok:true});}return json({error:'Action inconnue.'},400);
+if(b.action==='delete-application'){if(!await allowed('direction','recrutement'))return json({error:'Accès refusé.'},403);await db().prepare('DELETE FROM applications WHERE id=?').bind(b.id).run();return json({ok:true});}return json({error:'Action inconnue.'},400);
 }catch{return json({error:'Enregistrement impossible. Vérifiez votre connexion puis réessayez.'},500);}}
