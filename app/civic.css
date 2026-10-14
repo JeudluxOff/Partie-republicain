@@ -25,7 +25,14 @@ body{background:#fff;font-size:15px;color:#233651}h1,h2,h3{font-weight:800;lette
   max-height: none;
   object-fit: contain;
 }
+.news-image:has(> img) {
+  height: auto;
+}
 .news-image > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
   object-fit: contain;
   object-position: center;
   background: transparent;
