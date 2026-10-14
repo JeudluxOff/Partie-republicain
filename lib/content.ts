@@ -1,5 +1,5 @@
 export type News = {id:string; title:string; category:string; date:string; excerpt:string; body:string; image:string; published:boolean};
-export type Person = {id:string; name:string; role:string; group:string; parentId:string; bio:string; image:string; published:boolean; order:number};
+export type Person = {profileRole?:string; priorities?:string; values?:string; id:string; name:string; role:string; group:string; parentId:string; bio:string; image:string; published:boolean; order:number};
 export type Priority = {id:string; title:string; short:string; body:string; measures:string};
 export type Content = {name:string; tagline:string; heroTitle:string; heroText:string; heroImage:string; about:string; discordUrl:string; logoImage?:string; priorities:Priority[]; news:News[]; people:Person[]};
 export const initialContent: Content = {
