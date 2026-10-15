@@ -1,10 +1,13 @@
-import {GovRecord,GovUser,Kind,Department,DocTemplate,templates,departments,roles,calculateTax,renderDocument,can} from './government';
+import {GovRecord,GovUser,Kind,Department,DocTemplate,templates,departments,roles,calculateTax,renderDocument,can,serviceFields} from './government';
 import {record} from './gov-server';
 function str(d:any,k:string,max=8000,required=false){const v=d[k]??'';if(typeof v!=='string'||v.length>max||required&&!v.trim())throw Error('Champ invalide : '+k);return v.trim();}
 function integer(d:any,k:string,max=1e12){const v=d[k];if(!Number.isSafeInteger(v)||v<0||v>max)throw Error('Montant invalide : '+k);return v;}
 function date(d:any,k:string){const v=str(d,k,10,true);if(!/^\d{4}-\d{2}-\d{2}$/.test(v)||!Number.isFinite(Date.parse(v)))throw Error('Date invalide.');return v;}
 export async function cleanData(kind:Kind,dep:Department,input:any,u:GovUser,id:string,old:GovRecord|null){
 if(!input||typeof input!=='object'||Array.isArray(input))throw Error('Données invalides.');
+if(kind==='announcement')return {body:str(input,'body',20000,true),priority:str(input,'priority',80)};
+if(kind==='transaction'){if(old?.approved_at)throw Error('Montant validé : opération immuable.');if(!['income','expense'].includes(input.direction))throw Error('Champ invalide : sens');const amountCents=integer(input,'amountCents');if(!amountCents)throw Error('Montant nul.');return {direction:input.direction,amountCents,date:date(input,'date'),category:str(input,'category',120,true),reference:str(input,'reference',120,true),counterparty:str(input,'counterparty',120,true),notes:str(input,'notes')};}
+if(serviceFields[kind])return Object.fromEntries(serviceFields[kind]!.map(f=>[f.key,f.type==='date'&&input[f.key]?date(input,f.key):str(input,f.key,12000,f.required)]));
 if(kind==='company')return {owner:str(input,'owner',120,true),contact:str(input,'contact',120),activity:str(input,'activity',500,true),registration:str(input,'registration',100),notes:str(input,'notes')};
 if(kind==='tax')return {basisPoints:integer(input,'basisPoints',10000),baseLabel:str(input,'baseLabel',200,true),effective:date(input,'effective'),notes:str(input,'notes')};
 if(kind==='budget'){const allocatedCents=integer(input,'allocatedCents'),spentCents=integer(input,'spentCents');return {allocatedCents,spentCents,period:str(input,'period',100,true),notes:str(input,'notes')};}

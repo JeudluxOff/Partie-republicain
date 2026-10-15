@@ -1,4 +1,4 @@
-export const departments={general:'Secrétariat général',security:'Sécurité intérieure',economy:'Finances & Entreprises',justice:'Justice',citizen:'Vie citoyenne',events:'Événementiel',confidential:'Codes confidentiels'};
+export const departments={bulletin:'Annonces communes',general:'Secrétariat général',security:'Sécurité intérieure',economy:'Finances & Entreprises',justice:'Justice',citizen:'Vie citoyenne',events:'Événementiel',confidential:'Codes confidentiels'};
 export type Department=keyof typeof departments;
 export const roles={governor:'Gouverneur',lieutenant:'Lieutenant-gouverneur',general:'Secrétaire d’État général',security:'Secrétaire à la Sécurité intérieure',finance:'Secrétaire d’État aux Finances',business:'Secrétaire d’État aux Entreprises',justice:'Secrétaire d’État à la Justice',citizen:'Secrétaire d’État à la Vie citoyenne',events:'Secrétaire d’État à l’Événementiel',advisor:'Conseiller'};
 export type GovRole=keyof typeof roles;
@@ -6,21 +6,21 @@ export const actions=['read','create','edit','validate','delete'] as const;
 export type Action=typeof actions[number];
 export type Grants=Partial<Record<Department,Action[]>>;
 export type GovUser={id:string;username:string;name:string;role:GovRole;department:Department;grants:Grants;version:number;technical?:boolean};
-export const kinds={document:'Document',note:'Note interne',task:'Tâche',template:'Modèle de document',company:'Entreprise',tax:'Taux de taxe',assessment:'Avis de taxe & paiements',budget:'Budget',alert:'Niveau d’alerte / consigne',secret:'Code confidentiel'};
+export const kinds={announcement:'Annonce gouvernementale',transaction:'Opération de trésorerie',meeting:'Réunion & décision',incident:'Incident opérationnel',case:'Dossier judiciaire',request:'Demande citoyenne',event:'Organisation d’événement',document:'Document',note:'Note interne',task:'Tâche',template:'Modèle de document',company:'Entreprise',tax:'Taux de taxe',assessment:'Avis de taxe & paiements',budget:'Budget',alert:'Niveau d’alerte / consigne',secret:'Code confidentiel'};
 export type Kind=keyof typeof kinds;
 export type GovRecord={id:string;department:Department;kind:Kind;title:string;status:'draft'|'pending'|'approved'|'archived';data:Record<string,any>;revision:number;author:string;updated_at:string;approved_by:string|null;approved_at:string|null};
 export type TemplateField={key:string;label:string;type:'text'|'textarea'|'date'|'number';required:boolean};
 export type DocTemplate={id:string;department:Department;title:string;body:string;fields:TemplateField[]};
 export function defaultGrants(role:GovRole,department:Department):Grants{
  const all:Action[]=['read','create','edit','validate','delete'];
- if(role==='governor'||role==='lieutenant')return Object.fromEntries(Object.keys(departments).map(d=>[d,[...all]]));
+ if(role==='governor'||role==='lieutenant'||role==='general')return Object.fromEntries(Object.keys(departments).map(d=>[d,[...all]]));
  const dep:Department=role==='finance'||role==='business'?'economy':role==='advisor'?department:role as Department;
  const g:Grants={[dep]:role==='advisor'?['read','create','edit']:['read','create','edit','validate']};
  if(role==='security')g.confidential=['read','create','edit','validate'];return g;
 }
-export function can(u:GovUser,d:Department,a:Action){return !u.technical&&!!u.grants[d]?.includes(a);}
-export function managesUsers(u:GovUser){return !!u.technical||u.role==='governor';}
-export function kindAllowed(kind:Kind,dep:Department){if(kind==='secret')return dep==='confidential';if(dep==='confidential')return false;if(['company','tax','assessment','budget'].includes(kind))return dep==='economy';if(kind==='alert')return dep==='security';return true;}
+export function can(u:GovUser,d:Department,a:Action){return !u.technical&&Object.hasOwn(departments,d)&&(u.role==='general'||(d==='bulletin'&&(a==='read'||['governor','lieutenant'].includes(u.role)))||!!u.grants[d]?.includes(a));}
+export function managesUsers(u:GovUser){return !!u.technical||u.role==='governor'||u.role==='general';}
+export function kindAllowed(kind:Kind,dep:Department){if(dep==='bulletin')return kind==='announcement';if(kind==='announcement')return false;const scopes:Partial<Record<Kind,Department>>={transaction:'economy',meeting:'general',incident:'security',case:'justice',request:'citizen',event:'events'};if(scopes[kind])return scopes[kind]===dep;if(kind==='secret')return dep==='confidential';if(dep==='confidential')return false;if(['company','tax','assessment','budget'].includes(kind))return dep==='economy';if(kind==='alert')return dep==='security';return true;}
 export function money(cents:number){return (cents/100).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' $ RP';}
 export function calculateTax(baseCents:number,basisPoints:number){if(!Number.isSafeInteger(baseCents)||baseCents<0||baseCents>1e12||!Number.isInteger(basisPoints)||basisPoints<0||basisPoints>10000)throw Error('Montant ou taux invalide.');return Number((BigInt(baseCents)*BigInt(basisPoints)+BigInt(5000))/BigInt(10000));}
 const f=(key:string,label:string,type:TemplateField['type']='text',required=true):TemplateField=>({key,label,type,required});
@@ -44,3 +44,11 @@ export const templates:DocTemplate[]=[
 {id:'bilan-evenement',department:'events',title:'Bilan d’événement',fields:[f('evenement','Événement'),f('participation','Participation'),f('bilan','Bilan et incidents','textarea'),f('ameliorations','Améliorations','textarea')],body:head+'BILAN — {{evenement}}\n\nParticipation : {{participation}}\n\nBilan :\n{{bilan}}\n\nAméliorations :\n{{ameliorations}}'+foot}
 ];
 export function renderDocument(body:string,values:Record<string,string>){return body.replace(/\{\{([a-z_]+)\}\}/g,(_,key)=>values[key]||'—');}
+
+export const serviceFields:Partial<Record<Kind,{key:string;label:string;type?:string;required?:boolean}[]>>={
+meeting:[{key:'date',label:'Date de réunion',type:'date',required:true},{key:'participants',label:'Participants',required:true},{key:'decisions',label:'Décisions',type:'textarea'},{key:'assignee',label:'Responsable du suivi'},{key:'due',label:'Échéance',type:'date'}],
+incident:[{key:'date',label:'Date des faits',type:'date',required:true},{key:'location',label:'Lieu',required:true},{key:'priority',label:'Priorité / gravité',required:true},{key:'assignee',label:'Service mobilisé'},{key:'body',label:'Faits et mesures prises',type:'textarea',required:true}],
+case:[{key:'reference',label:'Référence de dossier',required:true},{key:'parties',label:'Parties concernées',required:true},{key:'assignee',label:'Juriste en charge'},{key:'due',label:'Prochaine échéance',type:'date'},{key:'body',label:'Faits, références RP et suites',type:'textarea',required:true}],
+request:[{key:'citizen',label:'Nom du citoyen',required:true},{key:'contact',label:'Contact'},{key:'category',label:'Catégorie',required:true},{key:'assignee',label:'Agent responsable'},{key:'due',label:'Réponse attendue le',type:'date'},{key:'body',label:'Demande et réponse apportée',type:'textarea',required:true}],
+event:[{key:'date',label:'Date de l’événement',type:'date',required:true},{key:'location',label:'Lieu',required:true},{key:'organizer',label:'Organisateur',required:true},{key:'partners',label:'Partenaires et services mobilisés'},{key:'body',label:'Programme, moyens et sécurité',type:'textarea',required:true}]
+};
