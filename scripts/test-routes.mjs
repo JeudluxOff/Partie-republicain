@@ -13,10 +13,10 @@ try {
     child.once('error', reject);
     child.once('exit', code => reject(new Error('Arrêt prématuré : '+code)));
   });
-  for (const path of ['/campagne','/agenda','/presse','/contact','/programme/securite','/', '/suivi', '/accueil', '/programme', '/equipe', '/actualites', '/adherer', '/admin', '/connexion', '/mentions', '/equipe/profil-test', '/actualites/annonce-test']) {
+  for (const path of ['/gouvernement','/campagne','/agenda','/presse','/contact','/programme/securite','/', '/suivi', '/accueil', '/programme', '/equipe', '/actualites', '/adherer', '/admin', '/connexion', '/mentions', '/equipe/profil-test', '/actualites/annonce-test']) {
     const res = await fetch('http://127.0.0.1:3187'+path);
     assert.equal(res.status, 200, path);
-    assert.match(await res.text(), /San Andreas Republican Party|SAN ANDREAS REPUBLICAN PARTY/, path);
+    assert.match(await res.text(), /San Andreas Republican Party|SAN ANDREAS REPUBLICAN PARTY|Vérification de votre accès/, path);
     console.log('OK 200 '+path);
   }
   const data = await fetch('http://127.0.0.1:3187/api/data');
@@ -29,6 +29,7 @@ try {
     console.log('OK 404 '+path);
   }
   assert.equal((await fetch('http://127.0.0.1:3187/api/admin')).status, 403);
+  for (const path of ['/api/government/records?department=economy','/api/government/records?department=confidential','/api/government/users']) assert.ok([401,403].includes((await fetch('http://127.0.0.1:3187'+path)).status),path);
   const image = await fetch('http://127.0.0.1:3187/images/equipe-union-civique.png');
   assert.equal(image.status, 200);
   assert.match(image.headers.get('content-type'), /image\/png/);

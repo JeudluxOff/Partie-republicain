@@ -1,3 +1,5 @@
+> **Version 4 : commencez par [MISE-A-JOUR-GOUVERNEMENT-V4.md](MISE-A-JOUR-GOUVERNEMENT-V4.md) pour installer et créer les comptes gouvernementaux.**
+
 > **Version 3 : consultez d’abord [MISE-A-JOUR-V3.md](MISE-A-JOUR-V3.md) pour les nouveautés et l’installation sur votre site existant.**
 
 # San Andreas Republican Party de Los Santos — Vercel
