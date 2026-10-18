@@ -1,0 +1,16 @@
+SAN ANDREAS REPUBLICAN PARTY — LOGO ET ADMINISTRATION
+
+Logo unique: public/images/logo-republican.png (éléphant rouge).
+Le composant Logo dans app/site.tsx utilise cette image pour le header, footer et administration.
+Le sceau et le monogramme du footer utilisent cette image aussi.
+Les anciennes règles CSS du symbole bleu ont été supprimées.
+Les favicons PNG et SVG sont remplacés.
+
+Si vous voyez toujours le symbole bleu : c’est une version précédente du site qui est servie.
+1. Ouvrir GitHub > app/site.tsx et rechercher "logo-republican.png?v=20261012-2".
+2. Si absent : les nouveaux fichiers ne sont PAS sur GitHub. Remplacer les fichiers, puis faire Commit.
+3. Vercel > Deployments : vérifier que le commit est bien déployé sur Production.
+4. Actualiser le navigateur avec Ctrl+F5.
+
+Administration : Ajout/suppression des programmes et changement de logo dans Identité du mouvement.
+Si un logo personnalisé est déjà enregistré dans la base de données, le changer depuis l’administration.

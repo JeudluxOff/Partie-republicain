@@ -1,0 +1,11 @@
+SAN ANDREAS REPUBLICAN PARTY — MISE À JOUR
+
+1. Décompresser le ZIP.
+2. Dans le dépôt GitHub RELIÉ À VERCEL, remplacer les fichiers aux mêmes chemins (app/, lib/, public/, etc.) et COMMITTER les changements sur la branche de production.
+3. Dans Vercel > Settings > Git, vérifier que le dépôt et la branche de production sont bien ceux que vous modifiez.
+4. Vérifier un nouveau déploiement Ready dans Deployments. Un ZIP seul n’est jamais automatiquement installé par Vercel.
+5. Dans /admin > Identité du mouvement, importer le logo, puis Enregistrer. L’import direct exige un stockage Vercel Blob (BLOB_READ_WRITE_TOKEN). Le logo rouge fourni dans public/images/logo-republican.png fonctionne immédiatement sans Blob.
+6. Dans /admin > Programme, ajouter, modifier ou supprimer des programmes, puis cliquer Enregistrer. Base de données Neon/DATABASE_URL requise pour enregistrer les contenus de façon persistante.
+
+Contrôles : app/site.tsx contient « Ajouter un programme » et « Logo du parti ».
+Logo par défaut : public/images/logo-republican.png.

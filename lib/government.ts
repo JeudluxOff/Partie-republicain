@@ -1,3 +1,4 @@
+import {legislativeTemplates} from './legislation';
 export const departments={bulletin:'Annonces communes',general:'Secrétariat général',security:'Sécurité intérieure',economy:'Finances & Entreprises',justice:'Justice',citizen:'Vie citoyenne',events:'Événementiel',confidential:'Codes confidentiels'};
 export type Department=keyof typeof departments;
 export const roles={governor:'Gouverneur',lieutenant:'Lieutenant-gouverneur',general:'Secrétaire d’État général',security:'Secrétaire à la Sécurité intérieure',finance:'Secrétaire d’État aux Finances',business:'Secrétaire d’État aux Entreprises',justice:'Secrétaire d’État à la Justice',citizen:'Secrétaire d’État à la Vie citoyenne',events:'Secrétaire d’État à l’Événementiel',advisor:'Conseiller'};
@@ -9,8 +10,8 @@ export type GovUser={id:string;username:string;name:string;role:GovRole;departme
 export const kinds={announcement:'Annonce gouvernementale',transaction:'Opération de trésorerie',meeting:'Réunion & décision',incident:'Incident opérationnel',case:'Dossier judiciaire',request:'Demande citoyenne',event:'Organisation d’événement',document:'Document',note:'Note interne',task:'Tâche',template:'Modèle de document',company:'Entreprise',tax:'Taux de taxe',assessment:'Avis de taxe & paiements',budget:'Budget',alert:'Niveau d’alerte / consigne',secret:'Code confidentiel'};
 export type Kind=keyof typeof kinds;
 export type GovRecord={id:string;department:Department;kind:Kind;title:string;status:'draft'|'pending'|'approved'|'archived';data:Record<string,any>;revision:number;author:string;updated_at:string;approved_by:string|null;approved_at:string|null};
-export type TemplateField={key:string;label:string;type:'text'|'textarea'|'date'|'number';required:boolean};
-export type DocTemplate={id:string;department:Department;title:string;body:string;fields:TemplateField[]};
+export type TemplateField={key:string;label:string;type:'text'|'textarea'|'date'|'number';required:boolean;options?:string[]};
+export type DocTemplate={id:string;department:Department;title:string;body:string;fields:TemplateField[];legislative?:boolean;changes?:boolean};
 export function defaultGrants(role:GovRole,department:Department):Grants{
  const all:Action[]=['read','create','edit','validate','delete'];
  if(role==='governor'||role==='lieutenant'||role==='general')return Object.fromEntries(Object.keys(departments).map(d=>[d,[...all]]));
@@ -42,6 +43,7 @@ export const templates:DocTemplate[]=[
 {id:'projet-citoyen',department:'citizen',title:'Fiche de projet citoyen',fields:[f('projet','Nom du projet'),f('objectifs','Objectifs','textarea'),f('moyens','Moyens et partenaires','textarea'),f('calendrier','Calendrier','textarea')],body:head+'PROJET CITOYEN — {{projet}}\n\nObjectifs :\n{{objectifs}}\n\nMoyens :\n{{moyens}}\n\nCalendrier :\n{{calendrier}}'+foot},
 {id:'autorisation-evenement',department:'events',title:'Autorisation d’événement',fields:[f('evenement','Événement'),f('organisateur','Organisateur'),f('lieu','Lieu'),f('jour','Date','date'),f('conditions','Conditions et sécurité','textarea')],body:head+'AUTORISATION D’ÉVÉNEMENT\n\nÉvénement : {{evenement}}\nOrganisateur : {{organisateur}}\nLieu : {{lieu}} — Date : {{jour}}\n\nConditions :\n{{conditions}}'+foot},
 {id:'bilan-evenement',department:'events',title:'Bilan d’événement',fields:[f('evenement','Événement'),f('participation','Participation'),f('bilan','Bilan et incidents','textarea'),f('ameliorations','Améliorations','textarea')],body:head+'BILAN — {{evenement}}\n\nParticipation : {{participation}}\n\nBilan :\n{{bilan}}\n\nAméliorations :\n{{ameliorations}}'+foot}
+,...legislativeTemplates()
 ];
 export function renderDocument(body:string,values:Record<string,string>){return body.replace(/\{\{([a-z_]+)\}\}/g,(_,key)=>values[key]||'—');}
 
