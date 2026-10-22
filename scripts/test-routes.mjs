@@ -30,9 +30,9 @@ try {
   }
   assert.equal((await fetch('http://127.0.0.1:3187/api/admin')).status, 403);
   for (const path of ['/api/government/records?department=economy','/api/government/records?department=confidential','/api/government/users']) assert.ok([401,403].includes((await fetch('http://127.0.0.1:3187'+path)).status),path);
-  const image = await fetch('http://127.0.0.1:3187/images/equipe-union-civique.png');
+  const image = await fetch('http://127.0.0.1:3187/images/equipe-union-civique.webp');
   assert.equal(image.status, 200);
-  assert.match(image.headers.get('content-type'), /image\/png/);
+  assert.match(image.headers.get('content-type'), /image\/webp/);
   console.log('OK API publique, dossiers protégés et image. Tests de production réussis.');
 } catch (error) {console.error(error); process.exitCode = 1;}
 finally {clearTimeout(timeout); const exited = once(child, 'exit'); child.kill(); await exited;}

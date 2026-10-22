@@ -1,41 +1,48 @@
-> **Version 4 : commencez par [MISE-A-JOUR-GOUVERNEMENT-V4.md](MISE-A-JOUR-GOUVERNEMENT-V4.md) pour installer et créer les comptes gouvernementaux.**
+# San Andreas Republican Party
 
-> **Version 3 : consultez d’abord [MISE-A-JOUR-V3.md](MISE-A-JOUR-V3.md) pour les nouveautés et l’installation sur votre site existant.**
+Site officiel du mouvement, de son administration et de son portail gouvernemental.
+Next.js 16 · React 19 · TypeScript · PostgreSQL (Neon) · Vercel Blob · déploiement Vercel.
 
-# San Andreas Republican Party de Los Santos — Vercel
-
-Site complet GTA RP : pages publiques, programme, annonces, équipe et cabinets, adhésions, administration des contenus et images.
-
-## Déploiement
-
-1. Extraire cette archive et mettre son contenu à la racine du dépôt GitHub. `package.json`, `vercel.json` et `app/` doivent apparaître directement.
-2. Importer le dépôt dans Vercel ; Root Directory `./`, Node.js 22.x. Le framework et les commandes sont configurés par `vercel.json`.
-3. Pour l’administration et les adhésions, connecter Neon, exécuter `database/schema.sql` et ajouter `DATABASE_URL`, `ADMIN_PASSWORD`, `SESSION_SECRET`.
-4. Pour importer des images, connecter Vercel Blob Public avec `BLOB_READ_WRITE_TOKEN`.
-5. Redéployer puis ouvrir `/connexion`.
-
-Le site public fonctionne sans base configurée. Les fonctions d’écriture nécessitent les services ci-dessus. Toutes les étapes sont détaillées dans `INSTALLATION-VERCEL.md`.
-
-## Architecture
-
-- Next.js App Router : accueil `app/page.tsx`, une route explicite par rubrique.
-- Fiches individuelles : `app/equipe/[id]/page.tsx` et `app/actualites/[id]/page.tsx`.
-- Interface et design conservés dans `app/site.tsx`, `app/globals.css` et `app/civic.css`.
-- Fonctions serveur Next.js dans `app/api/`, PostgreSQL Neon et images Vercel Blob.
-- Authentification administrateur côté serveur, cookie signé HttpOnly, contrôle d’origine, limites de connexion stockées dans PostgreSQL.
-- Aucun service ChatGPT Sites ou Cloudflare requis.
-
-## Commandes
+## Démarrage rapide
 
 ```bash
 npm ci
-npm run build
-npm run test:routes
-npm run dev
+cp .env.example .env.local   # puis renseigner les variables
+npm run db:setup             # crée les tables Neon
+npm run dev                  # http://localhost:3000
 ```
 
-Voir `.env.example` pour les variables. Ne jamais publier `.env.local`. En cas de mise à jour de l’ancien dépôt, retirer `app/[[...slug]]` : il a été remplacé par les routes explicites.
+Variables d'environnement (voir `.env.example`) :
 
-## Suivi des adhésions
+| Variable | Rôle |
+| --- | --- |
+| `DATABASE_URL` | Chaîne de connexion PostgreSQL Neon |
+| `ADMIN_PASSWORD` | Mot de passe du compte `admin` (16 caractères minimum) |
+| `SESSION_SECRET` | Secret de signature des sessions (32 caractères minimum, distinct du mot de passe) |
+| `BLOB_READ_WRITE_TOKEN` | Stockage Vercel Blob public, pour l'import d'images |
 
-Version 2.1 : page `/suivi`, lien privé après envoi et actualisation du statut toutes les 15 secondes. Voir `MISE-A-JOUR-SUIVI.md`. Aucune migration SQL nécessaire.
+## Commandes
+
+| Commande | Effet |
+| --- | --- |
+| `npm run dev` | Serveur de développement |
+| `npm run build` | Build de production (vérifie d'abord la présence des fichiers essentiels) |
+| `npm run typecheck` | Vérification TypeScript |
+| `npm run test:routes` | Tests de routes sur le build de production |
+| `npm run format` | Formate le code avec Prettier (téléchargé à la demande) |
+
+## Structure
+
+- `app/` : pages (accueil, programme, équipe, actualités, adhésion, administration, `/gouvernement`, `/suivi`), composants et feuilles de style. `refine.css` est chargé en dernier.
+- `app/api/` : routes API (connexion, contenu, adhésions, médias, dossiers gouvernementaux, suivi).
+- `lib/` : authentification, accès base de données, contenu par défaut, logique gouvernementale.
+- `database/` : `schema.sql` et migrations.
+- `scripts/` : initialisation de la base et contrôles de build.
+- `public/images/` : logo et visuels (WebP).
+- `docs/` : guide d'installation Vercel et historique des mises à jour.
+
+## Documentation
+
+- [Installation sur Vercel](docs/INSTALLATION-VERCEL.md)
+- [Journal des versions](CHANGELOG.md)
+- Notes détaillées de chaque version : `docs/historique/`

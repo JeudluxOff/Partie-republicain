@@ -1,15 +1,58 @@
-import {db,json,sameOrigin} from '../../../../lib/server';
-import {hashPassword} from '../../../../lib/auth';
-import {govSession,ensureGov,validateGrants} from '../../../../lib/gov-server';
-import {roles,departments,managesUsers} from '../../../../lib/government';
-export async function GET(){try{const u=await govSession();if(!u||!managesUsers(u))return json({error:'Accès refusé.'},403);await ensureGov();const {results}=await db().prepare('SELECT id,username,name,role,department,grants,version FROM gov_users ORDER BY name').all();return json({items:results.map((r:any)=>({...r,grants:JSON.parse(r.grants)}))});}catch{return json({error:'Chargement impossible.'},503);}}
-export async function POST(req:Request){if(!sameOrigin(req))return json({error:'Origine refusée.'},403);try{const u=await govSession();if(!u||!managesUsers(u))return json({error:'Accès refusé.'},403);const raw=await req.text();if(raw.length>15000)return json({error:'Requête trop longue.'},413);const b=JSON.parse(raw);if(typeof b.username==='string')b.username=b.username.trim().toLowerCase();await ensureGov();
-if(b.action==='delete'){if(typeof b.id!=='string'||b.id===u.id)return json({error:'Suppression de votre propre compte impossible.'},400);const result=await db().prepare("WITH changed AS (DELETE FROM gov_users WHERE id=? AND version=? RETURNING id,version), logged AS (INSERT INTO gov_audit(id,record_id,department,actor,action,revision,snapshot,created_at) SELECT ?,id,'accounts',?,'delete-account',version,'{}',? FROM changed RETURNING id) SELECT id FROM changed").bind(b.id,b.version,crypto.randomUUID(),u.name,new Date().toISOString()).first();return result?json({ok:true}):json({error:'Compte déjà modifié. Actualisez.'},409);}
-if(typeof b.username!=='string'||! /^[a-z0-9._-]{3,60}$/.test(b.username)||typeof b.name!=='string'||!b.name.trim()||b.name.length>120||!Object.hasOwn(roles,b.role)||!Object.hasOwn(departments,b.department))return json({error:'Identifiant, nom ou poste invalide.'},400);const grants=validateGrants(b.grants);if(b.id===u.id)return json({error:'Faites modifier votre propre compte par un autre administrateur.'},400);
-if(b.password!==''&&b.password!==undefined&&(typeof b.password!=='string'||b.password.length<16||b.password.length>200))return json({error:'Mot de passe : 16 à 200 caractères.'},400);
-const old=b.id?await db().prepare('SELECT id,password_hash,version FROM gov_users WHERE id=?').bind(b.id).first<any>():null;if(b.id&&!old)return json({error:'Compte introuvable.'},404);if(!old&&!b.password)return json({error:'Mot de passe requis.'},400);
-const id=old?.id||crypto.randomUUID(),hash=b.password?hashPassword(b.password):old.password_hash;const data=JSON.stringify({name:b.name,role:b.role,department:b.department,grants});
-const mutation=old?'UPDATE gov_users SET username=?,name=?,role=?,department=?,grants=?,password_hash=?,version=version+1 WHERE id=? AND version=? RETURNING id,version':'INSERT INTO gov_users(username,name,role,department,grants,password_hash,id) VALUES(?,?,?,?,?,?,?) ON CONFLICT(username) DO NOTHING RETURNING id,version';
-const values=[b.username,b.name.trim(),b.role,b.department,JSON.stringify(grants),hash,id,...(old?[b.version]:[])];
-const result=await db().prepare("WITH changed AS ("+mutation+"), logged AS (INSERT INTO gov_audit(id,record_id,department,actor,action,revision,snapshot,created_at) SELECT ?,id,'accounts',?,'save-account',version,?,? FROM changed RETURNING id) SELECT id FROM changed").bind(...values,crypto.randomUUID(),u.name,data,new Date().toISOString()).first();return result?json({ok:true}):json({error:'Identifiant déjà utilisé ou compte modifié. Actualisez.'},409);
-}catch(e){return json({error:e instanceof Error&&e.message.startsWith('Chaque permission')?e.message:'Enregistrement impossible. Vérifiez les champs et la connexion.'},400);}}
+import { db, json, sameOrigin } from '../../../../lib/server';
+import { hashPassword } from '../../../../lib/auth';
+import { govSession, ensureGov, validateGrants } from '../../../../lib/gov-server';
+import { roles, departments, managesUsers } from '../../../../lib/government';
+export async function GET() { try {
+    const u = await govSession();
+    if (!u || !managesUsers(u))
+        return json({ error: 'Accès refusé.' }, 403);
+    await ensureGov();
+    const { results } = await db().prepare('SELECT id,username,name,role,department,grants,version FROM gov_users ORDER BY name').all();
+    return json({ items: results.map((r: any) => ({ ...r, grants: JSON.parse(r.grants) })) });
+}
+catch {
+    return json({ error: 'Chargement impossible.' }, 503);
+} }
+export async function POST(req: Request) {
+    if (!sameOrigin(req))
+        return json({ error: 'Origine refusée.' }, 403);
+    try {
+        const u = await govSession();
+        if (!u || !managesUsers(u))
+            return json({ error: 'Accès refusé.' }, 403);
+        const raw = await req.text();
+        if (raw.length > 15000)
+            return json({ error: 'Requête trop longue.' }, 413);
+        const b = JSON.parse(raw);
+        if (typeof b.username === 'string')
+            b.username = b.username.trim().toLowerCase();
+        await ensureGov();
+        if (b.action === 'delete') {
+            if (typeof b.id !== 'string' || b.id === u.id)
+                return json({ error: 'Suppression de votre propre compte impossible.' }, 400);
+            const result = await db().prepare("WITH changed AS (DELETE FROM gov_users WHERE id=? AND version=? RETURNING id,version), logged AS (INSERT INTO gov_audit(id,record_id,department,actor,action,revision,snapshot,created_at) SELECT ?,id,'accounts',?,'delete-account',version,'{}',? FROM changed RETURNING id) SELECT id FROM changed").bind(b.id, b.version, crypto.randomUUID(), u.name, new Date().toISOString()).first();
+            return result ? json({ ok: true }) : json({ error: 'Compte déjà modifié. Actualisez.' }, 409);
+        }
+        if (typeof b.username !== 'string' || !/^[a-z0-9._-]{3,60}$/.test(b.username) || typeof b.name !== 'string' || !b.name.trim() || b.name.length > 120 || !Object.hasOwn(roles, b.role) || !Object.hasOwn(departments, b.department))
+            return json({ error: 'Identifiant, nom ou poste invalide.' }, 400);
+        const grants = validateGrants(b.grants);
+        if (b.id === u.id)
+            return json({ error: 'Faites modifier votre propre compte par un autre administrateur.' }, 400);
+        if (b.password !== '' && b.password !== undefined && (typeof b.password !== 'string' || b.password.length < 16 || b.password.length > 200))
+            return json({ error: 'Mot de passe : 16 à 200 caractères.' }, 400);
+        const old = b.id ? await db().prepare('SELECT id,password_hash,version FROM gov_users WHERE id=?').bind(b.id).first<any>() : null;
+        if (b.id && !old)
+            return json({ error: 'Compte introuvable.' }, 404);
+        if (!old && !b.password)
+            return json({ error: 'Mot de passe requis.' }, 400);
+        const id = old?.id || crypto.randomUUID(), hash = b.password ? hashPassword(b.password) : old.password_hash;
+        const data = JSON.stringify({ name: b.name, role: b.role, department: b.department, grants });
+        const mutation = old ? 'UPDATE gov_users SET username=?,name=?,role=?,department=?,grants=?,password_hash=?,version=version+1 WHERE id=? AND version=? RETURNING id,version' : 'INSERT INTO gov_users(username,name,role,department,grants,password_hash,id) VALUES(?,?,?,?,?,?,?) ON CONFLICT(username) DO NOTHING RETURNING id,version';
+        const values = [b.username, b.name.trim(), b.role, b.department, JSON.stringify(grants), hash, id, ...(old ? [b.version] : [])];
+        const result = await db().prepare("WITH changed AS (" + mutation + "), logged AS (INSERT INTO gov_audit(id,record_id,department,actor,action,revision,snapshot,created_at) SELECT ?,id,'accounts',?,'save-account',version,?,? FROM changed RETURNING id) SELECT id FROM changed").bind(...values, crypto.randomUUID(), u.name, data, new Date().toISOString()).first();
+        return result ? json({ ok: true }) : json({ error: 'Identifiant déjà utilisé ou compte modifié. Actualisez.' }, 409);
+    }
+    catch (e) {
+        return json({ error: e instanceof Error && e.message.startsWith('Chaque permission') ? e.message : 'Enregistrement impossible. Vérifiez les champs et la connexion.' }, 400);
+    }
+}

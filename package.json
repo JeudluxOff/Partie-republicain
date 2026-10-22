@@ -1,6 +1,6 @@
 {
   "name": "san-andreas-republican-party",
-  "version": "9.0.0",
+  "version": "10.0.0",
   "private": true,
   "engines": {
     "node": "22.x"
@@ -10,6 +10,7 @@
     "build": "next build --webpack",
     "start": "next start",
     "typecheck": "tsc --noEmit",
+    "format": "npx --yes prettier@3 --write \"app/**/*.{ts,tsx,css}\" \"lib/**/*.ts\" \"scripts/**/*.mjs\"",
     "db:setup": "node --env-file-if-exists=.env.local scripts/setup-db.mjs",
     "prebuild": "node scripts/verify-source.mjs",
     "test:routes": "node scripts/test-routes.mjs"

@@ -1,20 +1,83 @@
-export type News = {id:string; title:string; category:string; date:string; excerpt:string; body:string; image:string; published:boolean; publishAt?:string; featured?:boolean};
-export type Person = {profileRole?:string; priorities?:string; values?:string; id:string; name:string; role:string; group:string; parentId:string; bio:string; image:string; published:boolean; order:number};
-export type Priority = {id:string; title:string; short:string; body:string; measures:string};
-export type Event = {id:string;title:string;date:string;location:string;description:string;published:boolean;registration:boolean};
-export type PressAsset = {id:string;title:string;url:string};
-export type Campaign = {enabled:boolean;title:string;text:string;image:string;candidateIds:string[]};
-export type Content = {events?:Event[];press?:PressAsset[];campaign?:Campaign;name:string; tagline:string; heroTitle:string; heroText:string; heroImage:string; about:string; discordUrl:string; logoImage?:string; priorities:Priority[]; news:News[]; people:Person[]};
-export const initialContent: Content = {
- name:'San Andreas Republican Party',tagline:'Liberté. Responsabilité. Avenir.',heroTitle:'L’AVENIR DE\nLOS SANTOS.\nENSEMBLE.',heroText:'Un mouvement républicain engagé pour la sécurité des citoyens, la liberté d’entreprendre et des institutions responsables.',heroImage:'/images/equipe-union-civique.png',about:'Le San Andreas Republican Party est le mouvement républicain de Los Santos. Nous défendons une conviction simple : un État doit protéger les libertés, garantir la sécurité et donner à chacun les moyens de construire son avenir. Notre engagement repose sur la responsabilité, le travail et la proximité avec les citoyens.',discordUrl:'',logoImage:'/images/logo-republican.png',
- priorities:[
- {id:'securite',title:'Protéger nos citoyens.',short:'La sécurité, première des libertés.',body:'Une ville libre est une ville dans laquelle chacun peut vivre, travailler et se déplacer en confiance. Nous défendons une politique de sécurité fondée sur la présence, la prévention et la responsabilité.',measures:'Renforcer la coordination entre les services de sécurité.\nSoutenir la formation et les moyens des agents.\nFavoriser le dialogue entre les habitants et les institutions.\nAssocier fermeté et respect des droits.'},
- {id:'economie',title:'Libérer les initiatives.',short:'Le travail et l’entreprise au cœur du progrès.',body:'Commerçants, indépendants et entreprises font vivre Los Santos. Nous voulons leur donner un cadre lisible, stable et favorable à l’emploi.',measures:'Simplifier les démarches des entrepreneurs.\nAccompagner la création d’activité.\nDévelopper le dialogue avec les entreprises.\nDéfendre une gestion responsable des finances publiques.'},
- {id:'institutions',title:'Un État qui rend des comptes.',short:'La confiance se construit par les actes.',body:'L’action publique doit être compréhensible et accessible. Les citoyens doivent connaître les responsabilités de leurs représentants et les engagements qu’ils portent.',measures:'Clarifier les rôles du gouvernement et de ses cabinets.\nPublier les orientations et les décisions du parti.\nOrganiser un dialogue régulier avec les citoyens.\nPromouvoir l’intégrité dans les institutions.'},
- {id:'sante',title:'Prendre soin de chacun.',short:'Des services essentiels à la hauteur.',body:'La santé et les secours sont indispensables à une société solide. Nous défendons des services capables de répondre aux besoins quotidiens et aux situations d’urgence.',measures:'Soutenir la formation des professionnels de santé.\nAméliorer la coordination des secours.\nEncourager la prévention et la sensibilisation.\nÉcouter les besoins des équipes sur le terrain.'},
- {id:'justice',title:'Défendre une justice équitable.',short:'Les mêmes règles pour tous.',body:'Une justice indépendante et compréhensible garantit la liberté de chacun. La fermeté doit toujours s’accompagner du respect de la procédure et de la dignité.',measures:'Défendre l’égalité devant les règles de l’État.\nEncourager la lisibilité des procédures.\nFavoriser l’accès à l’information juridique.\nPréserver les droits de la défense.'},
- {id:'proximite',title:'Rassembler Los Santos.',short:'Une politique au plus près du terrain.',body:'Notre mouvement se construit avec celles et ceux qui font vivre les quartiers. L’engagement citoyen doit trouver une place concrète dans la vie du parti.',measures:'Accueillir les propositions des adhérents.\nFaciliter l’engagement bénévole.\nFaire remonter les besoins des quartiers.\nSoutenir les initiatives locales.'}
- ],
- news:[{id:'bienvenue',title:'Votre voix, notre engagement.',category:'Le mouvement',date:'2026-10-12',excerpt:'Découvrez l’San Andreas Republican Party, ses convictions et les façons de prendre part à la vie du mouvement.',body:'Le San Andreas Republican Party rassemble les citoyens qui souhaitent s’engager pour un État plus sûr, plus responsable et plus proche.\n\nCe site est le point de rencontre du mouvement : retrouvez notre projet, découvrez notre équipe et prenez connaissance de nos publications.\n\nVous souhaitez participer ? Déposez une demande d’adhésion. L’équipe du parti prendra connaissance de votre parcours et de vos motivations avant de vous recontacter.',image:'',published:true},{id:'projet',title:'Six engagements pour faire avancer Los Santos.',category:'Notre projet',date:'2026-10-12',excerpt:'Sécurité, économie, institutions, santé, justice et proximité : les fondations de notre engagement.',body:'Notre projet s’articule autour de six priorités complémentaires. Protéger les citoyens, encourager l’initiative et garantir des institutions responsables constituent le socle de notre engagement républicain.\n\nChaque priorité est présentée dans notre programme avec ses orientations. Nous souhaitons faire vivre ces engagements par le dialogue avec les habitants et les adhérents.',image:'',published:true}],people:[]
+export type News = {
+    id: string;
+    title: string;
+    category: string;
+    date: string;
+    excerpt: string;
+    body: string;
+    image: string;
+    published: boolean;
+    publishAt?: string;
+    featured?: boolean;
 };
-export const groups=['Candidats au gouvernement','Cabinets','Direction du parti','Membres du parti'];
+export type Person = {
+    profileRole?: string;
+    priorities?: string;
+    values?: string;
+    id: string;
+    name: string;
+    role: string;
+    group: string;
+    parentId: string;
+    bio: string;
+    image: string;
+    published: boolean;
+    order: number;
+};
+export type Priority = {
+    id: string;
+    title: string;
+    short: string;
+    body: string;
+    measures: string;
+};
+export type Event = {
+    id: string;
+    title: string;
+    date: string;
+    location: string;
+    description: string;
+    published: boolean;
+    registration: boolean;
+};
+export type PressAsset = {
+    id: string;
+    title: string;
+    url: string;
+};
+export type Campaign = {
+    enabled: boolean;
+    title: string;
+    text: string;
+    image: string;
+    candidateIds: string[];
+};
+export type Content = {
+    events?: Event[];
+    press?: PressAsset[];
+    campaign?: Campaign;
+    name: string;
+    tagline: string;
+    heroTitle: string;
+    heroText: string;
+    heroImage: string;
+    about: string;
+    discordUrl: string;
+    logoImage?: string;
+    priorities: Priority[];
+    news: News[];
+    people: Person[];
+};
+export const initialContent: Content = {
+    name: 'San Andreas Republican Party', tagline: 'Liberté. Responsabilité. Avenir.', heroTitle: 'L’AVENIR DE\nLOS SANTOS.\nENSEMBLE.', heroText: 'Un mouvement républicain engagé pour la sécurité des citoyens, la liberté d’entreprendre et des institutions responsables.', heroImage: '/images/equipe-union-civique.webp', about: 'Le San Andreas Republican Party est le mouvement républicain de Los Santos. Nous défendons une conviction simple : un État doit protéger les libertés, garantir la sécurité et donner à chacun les moyens de construire son avenir. Notre engagement repose sur la responsabilité, le travail et la proximité avec les citoyens.', discordUrl: '', logoImage: '/images/logo-republican.png',
+    priorities: [
+        { id: 'securite', title: 'Protéger nos citoyens.', short: 'La sécurité, première des libertés.', body: 'Une ville libre est une ville dans laquelle chacun peut vivre, travailler et se déplacer en confiance. Nous défendons une politique de sécurité fondée sur la présence, la prévention et la responsabilité.', measures: 'Renforcer la coordination entre les services de sécurité.\nSoutenir la formation et les moyens des agents.\nFavoriser le dialogue entre les habitants et les institutions.\nAssocier fermeté et respect des droits.' },
+        { id: 'economie', title: 'Libérer les initiatives.', short: 'Le travail et l’entreprise au cœur du progrès.', body: 'Commerçants, indépendants et entreprises font vivre Los Santos. Nous voulons leur donner un cadre lisible, stable et favorable à l’emploi.', measures: 'Simplifier les démarches des entrepreneurs.\nAccompagner la création d’activité.\nDévelopper le dialogue avec les entreprises.\nDéfendre une gestion responsable des finances publiques.' },
+        { id: 'institutions', title: 'Un État qui rend des comptes.', short: 'La confiance se construit par les actes.', body: 'L’action publique doit être compréhensible et accessible. Les citoyens doivent connaître les responsabilités de leurs représentants et les engagements qu’ils portent.', measures: 'Clarifier les rôles du gouvernement et de ses cabinets.\nPublier les orientations et les décisions du parti.\nOrganiser un dialogue régulier avec les citoyens.\nPromouvoir l’intégrité dans les institutions.' },
+        { id: 'sante', title: 'Prendre soin de chacun.', short: 'Des services essentiels à la hauteur.', body: 'La santé et les secours sont indispensables à une société solide. Nous défendons des services capables de répondre aux besoins quotidiens et aux situations d’urgence.', measures: 'Soutenir la formation des professionnels de santé.\nAméliorer la coordination des secours.\nEncourager la prévention et la sensibilisation.\nÉcouter les besoins des équipes sur le terrain.' },
+        { id: 'justice', title: 'Défendre une justice équitable.', short: 'Les mêmes règles pour tous.', body: 'Une justice indépendante et compréhensible garantit la liberté de chacun. La fermeté doit toujours s’accompagner du respect de la procédure et de la dignité.', measures: 'Défendre l’égalité devant les règles de l’État.\nEncourager la lisibilité des procédures.\nFavoriser l’accès à l’information juridique.\nPréserver les droits de la défense.' },
+        { id: 'proximite', title: 'Rassembler Los Santos.', short: 'Une politique au plus près du terrain.', body: 'Notre mouvement se construit avec celles et ceux qui font vivre les quartiers. L’engagement citoyen doit trouver une place concrète dans la vie du parti.', measures: 'Accueillir les propositions des adhérents.\nFaciliter l’engagement bénévole.\nFaire remonter les besoins des quartiers.\nSoutenir les initiatives locales.' }
+    ],
+    news: [{ id: 'bienvenue', title: 'Votre voix, notre engagement.', category: 'Le mouvement', date: '2026-10-12', excerpt: 'Découvrez l’San Andreas Republican Party, ses convictions et les façons de prendre part à la vie du mouvement.', body: 'Le San Andreas Republican Party rassemble les citoyens qui souhaitent s’engager pour un État plus sûr, plus responsable et plus proche.\n\nCe site est le point de rencontre du mouvement : retrouvez notre projet, découvrez notre équipe et prenez connaissance de nos publications.\n\nVous souhaitez participer ? Déposez une demande d’adhésion. L’équipe du parti prendra connaissance de votre parcours et de vos motivations avant de vous recontacter.', image: '', published: true }, { id: 'projet', title: 'Six engagements pour faire avancer Los Santos.', category: 'Notre projet', date: '2026-10-12', excerpt: 'Sécurité, économie, institutions, santé, justice et proximité : les fondations de notre engagement.', body: 'Notre projet s’articule autour de six priorités complémentaires. Protéger les citoyens, encourager l’initiative et garantir des institutions responsables constituent le socle de notre engagement républicain.\n\nChaque priorité est présentée dans notre programme avec ses orientations. Nous souhaitons faire vivre ces engagements par le dialogue avec les habitants et les adhérents.', image: '', published: true }], people: []
+};
+export const groups = ['Candidats au gouvernement', 'Cabinets', 'Direction du parti', 'Membres du parti'];
