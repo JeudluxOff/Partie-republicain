@@ -10,7 +10,6 @@
     "build": "next build --webpack",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "format": "npx --yes prettier@3 --write \"app/**/*.{ts,tsx,css}\" \"lib/**/*.ts\" \"scripts/**/*.mjs\"",
     "db:setup": "node --env-file-if-exists=.env.local scripts/setup-db.mjs",
     "prebuild": "node scripts/verify-source.mjs",
     "test:routes": "node scripts/test-routes.mjs"
